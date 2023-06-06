@@ -24,6 +24,22 @@
 
     const enc = Tiktoken.encodingForModel("gpt-4");
 
+    function insertZeroWidthSpace(str) {
+        let result = ''
+        for (let i = 0; i < str.length - 1; i++) {
+            result += str[i]
+            let isSurrogatePair =
+                0xD800 <= str.charCodeAt(i) && str.charCodeAt(i) <= 0xDBFF &&
+                0xDC00 <= str.charCodeAt(i + 1) && str.charCodeAt(i + 1) <= 0xDFFF
+
+            if (!isSurrogatePair && str[i] !== ' ' && str[i + 1] !== ' ') {
+                result += '\u200B' // Zero-width space
+            }
+        }
+        result += str[str.length - 1] // Add the last character
+        return result
+    }
+
     function messageClass(tag) {
         if (tag.startsWith('[user]')) {
             return "user-message"
@@ -360,11 +376,7 @@
             if (userInput.startsWith("Continue")) {
                 message = userInput
             } else {
-                message = "Continue replying to my previous message"
-                currentPreviousMessages = [...currentPreviousMessages, {
-                    tag: "[user](#message)",
-                    text: `Continue replying to my previous message: ${userInput}`
-                }]
+                message = insertZeroWidthSpace(userInput)
             }
 
             websocket.send(JSON.stringify({
