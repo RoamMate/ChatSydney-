@@ -149,13 +149,13 @@
                     <span className="close" onClick={handleClose}>❌</span>
                     <form>
                         <label>
-                            Tag:
+                            标签:
                             <input type="text" className="input-field" name="tag" value={data.tag || ''}
                                    onChange={handleChange}/>
                         </label>
                         <br/>
                         <label>
-                            Text:
+                            文本:
                             <textarea className="large-textarea" name="text" value={data.text || ''}
                                       onChange={handleChange}/>
                         </label>
@@ -163,7 +163,7 @@
                         {
                             ['[assistant](#search_query)', '[assistant](#message)'].includes(data.tag) &&
                             <label>
-                                HiddenText:
+                                隐藏文本:
                                 <textarea className="large-textarea" name="hiddenText" value={data.hiddenText || ''}
                                           onChange={handleChange}/>
                             </label>
@@ -172,7 +172,7 @@
                         {
                             data.tag === '[assistant](#search_query)' &&
                             <label>
-                                SearchResults:
+                                搜索结果:
                                 <textarea className="large-textarea" name="searchResults"
                                           value={data.searchResults || ''}
                                           onChange={handleChange}/>
@@ -183,13 +183,13 @@
                             <>
                                 <br/>
                                 <label>
-                                    Revoked:
+                                    是否被撤回?:
                                     <input type="checkbox" name="revoked" checked={data.revoked || false}
                                            onChange={handleCheckboxChange}/>
                                 </label>
                                 <br/>
                                 <label>
-                                    Suggestions:
+                                   建议回复:
                                     <textarea className="large-textarea" type="text" name="suggestions"
                                               value={JSON.stringify(data.suggestions || [])} onChange={handleChange}/>
                                 </label>
@@ -403,7 +403,7 @@
                                 updateMessage({searchResults: message.hiddenText})
                                 break
                             case "Disengaged":
-                                continueOnRevoke || alert("Sydney ended the conversation")
+                                continueOnRevoke || alert("Sydney结束了对话")
                                 finished({disengaged: true})
                                 break
                             case undefined:
@@ -414,7 +414,7 @@
                                         hiddenText: message.text !== message.adaptiveCards[0].body[0].text ? message.text : null,
                                     })
                                 } else if (message.contentOrigin === 'Apology') {
-                                    continueOnRevoke || alert('Message revoke detected')
+                                    continueOnRevoke || alert('消息被撤回')
                                     updateMessage({revoked: true})
                                     finished({revoked: true})
                                 } else {
@@ -438,7 +438,7 @@
                             finished()
                         }
                         else {
-                            continueOnRevoke || alert("Looks like the user message has triggered the Bing filter")
+                            continueOnRevoke || alert("看起来用户的消息触发了bing安全机制")
                             finished({filtered: true})
                         }
                     } else if (response.type === "error") {
@@ -508,7 +508,7 @@
         }
 
         const addKey = () => {
-            const newKey = prompt('Enter a new key:');
+            const newKey = prompt('取个名字:');
             if (newKey) {
                 localStorage.setItem("chatHistory" + newKey, JSON.stringify(defaultMessages));
                 setSelectedKey(newKey);
@@ -517,7 +517,7 @@
 
         const renameKey = () => {
             if (selectedKey) {
-                const renamedKey = prompt('Enter a new name for the key:', selectedKey);
+                const renamedKey = prompt('给这个预设重新取个名字:', selectedKey);
                 if (renamedKey) {
                     const savedMessages = localStorage.getItem("chatHistory" + selectedKey);
                     localStorage.removeItem("chatHistory" + selectedKey);
@@ -543,11 +543,11 @@
         return (
             <div className="container">
                 <div className="chat-history">
-                    <h3 className="heading">Chat History:</h3>
+                    <h3 className="heading">聊天记录:</h3>
                     <div className="button-container">
-                        <button disabled={responding} className="button" onClick={addKey}>Add</button>
-                        <button disabled={responding} className="button" onClick={renameKey}>Rename</button>
-                        <button disabled={responding} className="button" onClick={deleteKey}>Delete</button>
+                        <button disabled={responding} className="button" onClick={addKey}>加载预设</button>
+                        <button disabled={responding} className="button" onClick={renameKey}>重命名预设</button>
+                        <button disabled={responding} className="button" onClick={deleteKey}>删除预设</button>
                         <select
                             disabled={responding}
                             value={selectedKey}
@@ -561,14 +561,14 @@
                             className="button"
                             disabled={responding}
                             onClick={() => clearSuggestions()}>
-                            Clear Suggestions
+                            清除建议回复
                         </button>
                         <button
                             className="button"
                             disabled={responding}
                             onClick={() => setPreviousMessages(defaultMessages)}
                         >
-                            Clear
+                           清除聊天记录
                         </button>
                         <input accept="application/json" ref={fileInput} type="file" style={{display: "none"}}
                                onChange={handleFileChange}/>
@@ -577,12 +577,12 @@
                             disabled={responding}
                             onClick={() => fileInput.current.click()}
                         >
-                            Load
+                            加载聊天记录
                         </button>
                         <button className="button"
                                 onClick={() => download("chat_history.json", JSON.stringify(previousMessages, null, 2))}
                         >
-                            Save
+                            保存聊天记录
                         </button>
                     </div>
                     <div className="messages" id="messages">
@@ -600,13 +600,13 @@
                     </div>
                 </div>
                 <div className="user-input">
-                    <label htmlFor="suggestion-switch">Accept Suggestions</label>
+                    <label htmlFor="suggestion-switch">开启建议回复</label>
                     <input type="checkbox" id="suggestion-switch" checked={acceptSuggestions}
                            onChange={event => setAcceptSuggestions(event.target.checked)}/>
-                    <label htmlFor="continue-switch">Continue on revoke</label>
+                    <label htmlFor="continue-switch">消息撤回时自动发送</label>
                     <input type="checkbox" id="continue-switch" checked={continueOnRevoke}
                            onChange={event => setContinueOnRevoke(event.target.checked)}/>
-                    <h3 className="heading">User Input:</h3>
+                    <h3 className="heading">用户输入:</h3>
                     <div id="suggestedResponsesContainer">
                         {(previousMessages[previousMessages.length - 1].revoked ?
                             ["Continue from your last sentence", "从你的上一句话继续", "あなたの最後の文から続けてください"] :
@@ -624,10 +624,10 @@
                     />
                     <div style={{display: "flex", justifyContent: "space-between", flexWrap: "wrap"}}>
                         <button id="sendBtn" className="button" onClick={sendMessage} disabled={responding}>
-                            Send
+                            发送
                         </button>
 						<button id="stopBtn" className="button" onClick={stopMessage} disabled={!responding}>
-                            Stop
+                            停止生成
                         </button>
                         <select
                             id="send-mode-selector"
@@ -649,7 +649,7 @@
                             <option value="en-IE">en-IE</option>
                             <option value="en-GB">en-GB</option>
                         </select>
-                        <div>Context: {contextTokens} tokens, User Input: {userInputTokens} tokens</div>
+                        <div>上下文本消耗: {contextTokens} tokens, 用户输入消耗: {userInputTokens} tokens</div>
                         <label>_U cookie:&nbsp;
                             <input onChange={event => {
                                 set_UOverride(event.target.value)
